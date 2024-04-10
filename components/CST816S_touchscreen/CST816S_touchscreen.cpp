@@ -63,6 +63,7 @@ void CST816STouchScreen::loop() {
         }
     }
 }
+}
 
 }  // namespace cst816s_touchscreen
 }  // namespace esphome
