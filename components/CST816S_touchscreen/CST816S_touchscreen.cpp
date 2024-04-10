@@ -38,6 +38,28 @@ void CST816STouchScreen::loop() {
                 previousMillis = currentMillis;
             }
         }
+        else if(touch.data.gestureID == 5){
+            if(currentMillis - previousMillis > interval) {     //debounce
+
+                char x_str[20]; // Assuming a maximum of 20 characters
+                char y_str[20];
+
+                sprintf(x_str, "%d", touch.x);
+                sprintf(y_str, "%d", touch.y);
+                // Define separator character
+                char separator = ':';
+                // Calculate the total length of the resulting string
+                int total_length = snprintf(NULL, 0, "%s%c%s", x_str, separator, y_str) + 1; // +1 for null terminator
+                // Allocate memory for the resulting string
+                char* result = (char*)malloc(total_length * sizeof(char));
+
+                snprintf(result, total_length, "%s%c%s", x_str, separator, y_str);
+                ESP_LOGI("touchscreen", "pos: %i", result);
+
+                this->publish_state(result);
+                previousMillis = currentMillis;
+                free(result);
+        }
     }
 }
 
