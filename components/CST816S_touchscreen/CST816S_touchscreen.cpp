@@ -29,30 +29,30 @@ void CST816STouchScreen::loop() {
     unsigned long currentMillis = millis();
 
     if (touch.available()) {
-        // if(touch.data.gestureID != 0 && touch.data.gestureID != 0x05 ){                          //ignore None gesture type
-        //     if(currentMillis - previousMillis > interval) {     //debounce
-        //         char buf[20];
-        //         sprintf(buf, "%s", touch.gesture());
-        //         ESP_LOGI("touchscreen", "Gesture: %s", touch.gesture());
-        //         this->publish_state(buf);
-        //         previousMillis = currentMillis;
-        //     }
+        if(touch.data.gestureID != 0 && touch.data.gestureID != 0x05 ){                          //ignore None gesture type
+            if(currentMillis - previousMillis > interval) {     //debounce
+                char buf[20];
+                sprintf(buf, "%s", touch.gesture());
+                ESP_LOGI("touchscreen", "Gesture: %s", touch.gesture());
+                this->publish_state(buf);
+                previousMillis = currentMillis;
+            }
         if(touch.data.gestureID == 0x05 ){
             if(currentMillis - previousMillis > interval) {     //debounce
-
+                char buf[20];
                 char x_str[20]; // Assuming a maximum of 20 characters
                 char y_str[20];
-
+                sprintf(buf, "%s", touch.gesture());
                 sprintf(x_str, "%d", touch.data.x);
                 sprintf(y_str, "%d", touch.data.y);
                 // Define separator character
                 char separator = ':';
                 // Calculate the total length of the resulting string
-                int total_length = snprintf(NULL, 0, "%s%c%s", x_str, separator, y_str) + 1; // +1 for null terminator
+                int total_length = snprintf(NULL, 0, "%s%c%s%c%s", buf, separator, x_str, separator, y_str) + 1; // +1 for null terminator
                 // Allocate memory for the resulting string
                 char* result = (char*)malloc(total_length * sizeof(char));
 
-                snprintf(result, total_length, "%s%c%s", x_str, separator, y_str);
+                snprintf(result, total_length, "%s%c%s%c%s", buf, separator, x_str, separator, y_str);
                 
                 ESP_LOGI("touchscreen", "pos: %s", result);
 
@@ -60,7 +60,7 @@ void CST816STouchScreen::loop() {
                 previousMillis = currentMillis;
                 
                 free(result);
-            // }
+            }
         }
     }
 }
