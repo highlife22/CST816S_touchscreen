@@ -58,6 +58,7 @@ void CST816STouchScreen::loop() {
 
                 this->publish_state(result);
                 previousMillis = currentMillis;
+                
                 free(result);
         }
     }
