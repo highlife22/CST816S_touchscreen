@@ -51,9 +51,10 @@ void CST816STouchScreen::loop() {
                 int total_length = snprintf(NULL, 0, "%s%c%s", x_str, separator, y_str) + 1; // +1 for null terminator
                 // Allocate memory for the resulting string
                 char* result = (char*)malloc(total_length * sizeof(char));
-
+                ESP_LOGI("touchID", "ID: %s", touch.data.gestureID)
                 snprintf(result, total_length, "%s%c%s", x_str, separator, y_str);
-                ESP_LOGI("touchscreen", "pos: %i", result);
+                
+                ESP_LOGI("touchscreen", "pos: %s", result);
 
                 this->publish_state(result);
                 previousMillis = currentMillis;
