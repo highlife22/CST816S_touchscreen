@@ -60,7 +60,7 @@ void CST816STouchScreen::loop() {
                 
                 free(result);
             // }
-        }
+       // }
     }
 }
 }
