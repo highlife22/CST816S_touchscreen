@@ -29,7 +29,7 @@ void CST816STouchScreen::loop() {
     unsigned long currentMillis = millis();
 
     if (touch.available()) {
-        if(touch.data.gestureID != 0){                          //ignore None gesture type
+        if(touch.data.gestureID != 0 && touch.data.gestureID != 5){                          //ignore None gesture type
             if(currentMillis - previousMillis > interval) {     //debounce
                 char buf[20];
                 sprintf(buf, "%s", touch.gesture());
