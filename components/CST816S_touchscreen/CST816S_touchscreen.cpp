@@ -44,8 +44,8 @@ void CST816STouchScreen::loop() {
                 char x_str[20]; // Assuming a maximum of 20 characters
                 char y_str[20];
 
-                sprintf(x_str, "%d", touch.x);
-                sprintf(y_str, "%d", touch.y);
+                sprintf(x_str, "%d", touch.data.x);
+                sprintf(y_str, "%d", touch.data.y);
                 // Define separator character
                 char separator = ':';
                 // Calculate the total length of the resulting string
