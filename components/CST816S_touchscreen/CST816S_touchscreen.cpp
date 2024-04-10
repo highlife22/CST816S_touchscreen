@@ -37,7 +37,7 @@ void CST816STouchScreen::loop() {
         //         this->publish_state(buf);
         //         previousMillis = currentMillis;
         //     }
-        // else if(touch.data.gestureID == 0x05 ){
+        if(touch.data.gestureID == 0x05 ){
             if(currentMillis - previousMillis > interval) {     //debounce
 
                 char x_str[20]; // Assuming a maximum of 20 characters
@@ -51,7 +51,6 @@ void CST816STouchScreen::loop() {
                 int total_length = snprintf(NULL, 0, "%s%c%s", x_str, separator, y_str) + 1; // +1 for null terminator
                 // Allocate memory for the resulting string
                 char* result = (char*)malloc(total_length * sizeof(char));
-                sprintf(touch.data.gestureID);
 
                 snprintf(result, total_length, "%s%c%s", x_str, separator, y_str);
                 
@@ -62,7 +61,7 @@ void CST816STouchScreen::loop() {
                 
                 free(result);
             // }
-       // }
+        }
     }
 }
 }
