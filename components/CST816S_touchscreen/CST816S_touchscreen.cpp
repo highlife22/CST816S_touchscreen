@@ -37,7 +37,6 @@ void CST816STouchScreen::loop() {
                 this->publish_state(buf);
                 previousMillis = currentMillis;
             }
-        }
         else if(touch.data.gestureID == SINGLE_CLICK ){
             if(currentMillis - previousMillis > interval) {     //debounce
 
@@ -60,6 +59,7 @@ void CST816STouchScreen::loop() {
                 previousMillis = currentMillis;
                 
                 free(result);
+            }
         }
     }
 }
