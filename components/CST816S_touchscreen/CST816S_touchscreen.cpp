@@ -46,17 +46,17 @@ void CST816STouchScreen::loop() {
                 char* result = (char*)malloc(total_length * sizeof(char));
                 
                 if (buf == "SWIPE UP")
-                    sprintf(ans, "1");
+                    strcpy(ans, "1");
                 else if (buf == "SWIPE DOWN")
-                    sprintf(ans, "2");
+                    strcpy(ans, "2");
                 else if (buf == "SWIPE RIGHT")
-                    sprintf(ans, "3");
+                    strcpy(ans, "3");
                 else if (buf == "SWIPE LEFT")
-                    sprintf(ans, "4");
+                    strcpy(ans, "4");
                 else if (buf == "LONG PRESS")
-                    sprintf(ans, "5");
+                    strcpy(ans, "5");
                 else
-                    sprintf(ans, "0");
+                    strcpy(ans, "0");
                 snprintf(result, total_length, "%s%c%s%c%s", ans, separator, x_str, separator, y_str);
                 
                 ESP_LOGI("touchscreen", "pos: %s", result);
