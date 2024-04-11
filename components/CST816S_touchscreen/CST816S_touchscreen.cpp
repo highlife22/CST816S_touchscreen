@@ -45,15 +45,15 @@ void CST816STouchScreen::loop() {
                 // Allocate memory for the resulting string
                 char* result = (char*)malloc(total_length * sizeof(char));
                 
-                if (buf == SWIPE_UP)
+                if (touch.data.gestureID == SWIPE_UP)
                     strcpy(ans, "1");
-                else if (buf == SWIPE_DOWN)
+                else if (touch.data.gestureID == SWIPE_DOWN)
                     strcpy(ans, "2");
-                else if (buf == SWIPE_RIGHT)
+                else if (touch.data.gestureID == SWIPE_RIGHT)
                     strcpy(ans, "3");
-                else if (buf == SWIPE_LEFT)
+                else if (touch.data.gestureID == SWIPE_LEFT)
                     strcpy(ans, "4");
-                else if (buf == LONG_PRESS)
+                else if (touch.data.gestureID == LONG_PRESS)
                     strcpy(ans, "5");
                 else
                     strcpy(ans, "0");
