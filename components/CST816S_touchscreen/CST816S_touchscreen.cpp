@@ -32,7 +32,7 @@ void CST816STouchScreen::loop() {
         if(touch.data.gestureID != 0){                          //ignore None gesture type
             if(currentMillis - previousMillis > interval) {     //debounce
                 char buf[20];
-                char ans[20]:
+                char ans[20];
                 char x_str[20]; // Assuming a maximum of 20 characters
                 char y_str[20];
                 sprintf(buf, "%s", touch.gesture());
