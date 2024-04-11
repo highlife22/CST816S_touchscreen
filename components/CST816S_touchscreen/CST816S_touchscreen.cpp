@@ -32,6 +32,7 @@ void CST816STouchScreen::loop() {
         if(touch.data.gestureID != 0){                          //ignore None gesture type
             if(currentMillis - previousMillis > interval) {     //debounce
                 char buf[20];
+                char ans[20]:
                 char x_str[20]; // Assuming a maximum of 20 characters
                 char y_str[20];
                 sprintf(buf, "%s", touch.gesture());
@@ -43,8 +44,20 @@ void CST816STouchScreen::loop() {
                 int total_length = snprintf(NULL, 0, "%s%c%s%c%s", buf, separator, x_str, separator, y_str) + 1; // +1 for null terminator
                 // Allocate memory for the resulting string
                 char* result = (char*)malloc(total_length * sizeof(char));
-
-                snprintf(result, total_length, "%s%c%s%c%s", buf, separator, x_str, separator, y_str);
+                
+                if (buf == "SWIPE UP")
+                    sprintf(ans, "1");
+                else if (buf == "SWIPE DOWN")
+                    sprintf(ans, "2");
+                else if (buf == "SWIPE RIGHT")
+                    sprintf(ans, "3");
+                else if (buf == "SWIPE LEFT")
+                    sprintf(ans, "4");
+                else if (buf == "LONG PRESS")
+                    sprintf(ans, "5");
+                else
+                    sprintf(ans, "0");
+                snprintf(result, total_length, "%s%c%s%c%s", ans, separator, x_str, separator, y_str);
                 
                 ESP_LOGI("touchscreen", "pos: %s", result);
 
