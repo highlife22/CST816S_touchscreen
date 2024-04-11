@@ -33,8 +33,8 @@ void CST816STouchScreen::loop() {
             if(currentMillis - previousMillis > interval) {     //debounce
                 char buf[20];
                 char ans[20];
-                char x_str[20]; // Assuming a maximum of 20 characters
-                char y_str[20];
+                char x_str[5]; // Assuming a maximum of 5 characters
+                char y_str[5];
                 sprintf(buf, "%s", touch.gesture());
                 sprintf(x_str, "%d", touch.data.x);
                 sprintf(y_str, "%d", touch.data.y);
@@ -57,6 +57,7 @@ void CST816STouchScreen::loop() {
                     strcpy(ans, "5");
                 else
                     strcpy(ans, "0");
+                // gestureID:X:Y - 1:125:40
                 snprintf(result, total_length, "%s%c%s%c%s", ans, separator, x_str, separator, y_str);
                 
                 ESP_LOGI("touchscreen", "pos: %s", result);
