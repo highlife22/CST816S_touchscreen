@@ -6,6 +6,15 @@
 #define TP_RST 1
 #define TP_INT 0
 
+NONE = 0x00;
+SWIPE_UP = 0x01;
+SWIPE_DOWN = 0x02;
+SWIPE_LEFT = 0x03;
+SWIPE_RIGHT = 0x04;
+SINGLE_CLICK = 0x05;
+DOUBLE_CLICK = 0x0B;
+LONG_PRESS = 0x0C;
+
 namespace esphome {
 namespace cst816s_touchscreen {
 
@@ -45,15 +54,15 @@ void CST816STouchScreen::loop() {
                 // Allocate memory for the resulting string
                 char* result = (char*)malloc(total_length * sizeof(char));
                 
-                if (buf == "SWIPE UP")
+                if (buf == SWIPE UP)
                     strcpy(ans, "1");
-                else if (buf == "SWIPE DOWN")
+                else if (buf == SWIPE DOWN)
                     strcpy(ans, "2");
-                else if (buf == "SWIPE RIGHT")
+                else if (buf == SWIPE RIGHT)
                     strcpy(ans, "3");
-                else if (buf == "SWIPE LEFT")
+                else if (buf == SWIPE LEFT)
                     strcpy(ans, "4");
-                else if (buf == "LONG PRESS")
+                else if (buf == LONG PRESS)
                     strcpy(ans, "5");
                 else
                     strcpy(ans, "0");
