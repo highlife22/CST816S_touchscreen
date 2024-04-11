@@ -29,15 +29,7 @@ void CST816STouchScreen::loop() {
     unsigned long currentMillis = millis();
 
     if (touch.available()) {
-        if(touch.data.gestureID != 0 && touch.data.gestureID != 0x05 ){                          //ignore None gesture type
-            if(currentMillis - previousMillis > interval) {     //debounce
-                char buf[20];
-                sprintf(buf, "%s", touch.gesture());
-                ESP_LOGI("touchscreen", "Gesture: %s", touch.gesture());
-                this->publish_state(buf);
-                previousMillis = currentMillis;
-            }
-        if(touch.data.gestureID == 0x05 ){
+        if(touch.data.gestureID != 0){                          //ignore None gesture type
             if(currentMillis - previousMillis > interval) {     //debounce
                 char buf[20];
                 char x_str[20]; // Assuming a maximum of 20 characters
@@ -60,7 +52,6 @@ void CST816STouchScreen::loop() {
                 previousMillis = currentMillis;
                 
                 free(result);
-            }
         }
     }
 }
