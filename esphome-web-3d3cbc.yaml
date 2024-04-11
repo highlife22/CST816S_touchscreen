@@ -1,0 +1,266 @@
+#https://community.home-assistant.io/t/esp32-c3-with-integrated-gc9a01-cheap-touch-controller/610314/146
+#https://community.home-assistant.io/t/esp32-c3-with-integrated-gc9a01-cheap-touch-controller/610314/73
+substitutions:
+  devicename: wallwatch01
+  friendname: WallWatch01
+  location: master
+  board: esp32-c3-devkitm-1
+#GPIO pins for the LCD screen
+  repin: GPIO1
+  dcpin: GPIO2
+  bkpin: GPIO3
+  clpin: GPIO6
+  mopin: GPIO7
+  cspin: GPIO10
+# GPIO pins for the touch screen
+  sdapin: GPIO4
+  sclpin: GPIO5
+  intpin: GPIO8  
+
+esphome:
+  name: $devicename
+  friendly_name: $friendname
+  libraries:
+   - "Wire"
+
+esp32:
+  board: $board
+  framework:
+    type: arduino
+
+logger:
+  logs:
+    component: ERROR
+  #level: DEBUG
+# Enable logging
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+
+captive_portal:
+
+time:
+  - platform: homeassistant
+    timezone: "Europe/Paris"
+    id: esptime
+
+# Test - see if the thing picks up BLE info
+#esp32_ble_tracker:
+#nope - locks up
+#SpokeTooSoon - actually does work, kinda. Slows down the startup significantly then claims to scan but nothing is found
+#Either is not supported or antenna is really weak
+
+sensor:
+  - platform: uptime
+    name: "$devicename Uptime"
+  - platform: wifi_signal
+    name: "$devicename WiFi Signal"
+    update_interval: 60s  
+    entity_category: "diagnostic" 
+  - platform: homeassistant
+    id: outdoor_temperature
+    entity_id: sensor.weather_temperature
+  - platform: homeassistant
+    id: bureau
+    entity_id: light.bulb_rgbcw_ea6e56
+
+    
+number:
+  # This is a binary off or on to toggle the light off or on
+  - platform: template
+    optimistic: true
+    name: "$devicename light state"
+    id: light_state
+    min_value: 0
+    max_value: 1
+    #initial_value: 0
+    update_interval: 1s
+    step: 1
+  - platform: template
+    optimistic: true
+    name: "$devicename x state"
+    id: x_state
+    min_value: 0
+    max_value: 240
+    step: 1
+  - platform: template
+    optimistic: true
+    name: "$devicename y state"
+    id: y_state
+    min_value: 0
+    max_value: 240
+    step: 1
+
+
+external_components:
+  - source: github://bearpawmaxim/esphome@pr3625fix
+    components: [ gc9a01 ]
+  - source: github://highlife22/CST816S_touchscreen
+    refresh: 10s
+
+spi:
+  mosi_pin: $mopin
+  clk_pin: $clpin
+#mosi = Master Out Slave In
+#miso = Master In Slave Out or fermented bean paste. In this case, most likely the former rather than the latter. Doesn't matter as not used.
+
+# Need to turn on backlight as by default is not on
+output:
+  - platform: ledc
+    pin: $bkpin
+    id: gpio_3_backlight_pwm
+
+light:
+  - platform: monochromatic
+    output: gpio_3_backlight_pwm
+    name: "Display Backlight"
+    id: back_light
+    restore_mode: ALWAYS_ON
+
+text_sensor:
+  - platform: CST816S_touchscreen
+    id: my_touch_screen
+    on_value:
+      lambda: |-
+
+
+          #define LIGHTSTATE(value) id(light_state).make_call().set_value(value).perform()
+          #define BACKLIGHT(value) id(back_light).turn_on().set_brightness(value).perform();
+
+          const char* cString = id(my_touch_screen).state.c_str();   
+
+          char* strtmp = strdup(cString);
+          char* id = strtok(strtmp, ":"); // Get the first part before ":"
+          char* tx = strtok(NULL, ":");    // Get the second part after ":"
+          char* ty = strtok(NULL, ":");    // Get the third part after ":"
+          
+          //ESP_LOGD("lambda", id );
+          //ESP_LOGD("x", tx );
+          //ESP_LOGD("y", ty );
+
+          if (strcmp(id, "0") == 0)
+          {
+            // only if we single click
+            id(x_state).make_call().set_value(atoi(tx)).perform(); // to store x
+            id(y_state).make_call().set_value(atoi(ty)).perform(); // to store y
+
+            if (id(light_state).state == 0)
+            {
+              LIGHTSTATE(1);
+              BACKLIGHT(1.0);
+            }
+            else {
+              LIGHTSTATE(0);
+              BACKLIGHT(0.5);
+            }
+          }
+          else if (strcmp(id, "1") == 0)
+          {
+            LIGHTSTATE(1);
+            BACKLIGHT(1.0);
+          } 
+          else if (strcmp(id, "2") == 0)
+          {
+            LIGHTSTATE(0);
+            BACKLIGHT(0.5);
+          } 
+          else if (strcmp(id, "3") == 0)
+          {
+            BACKLIGHT(0.2);
+          } 
+          else if (strcmp(id, "4") == 0)
+          {
+            BACKLIGHT(1.0);
+          } 
+          else if (strcmp(id, "5") == 0)
+          {
+            BACKLIGHT(0.5);
+          }
+          free(strtmp);
+            
+#    - platform: homeassistant
+#      id: spotify_title
+#      entity_id: media_player.spotify_highlife22
+#      attribute: media_title
+
+          #- if:
+              #condition:
+                #and:
+                  #- text_sensor.state:
+                      #id: my_touch_screen
+                      #state: 'SINGLE CLICK' 
+              #then:       
+                #- number.increment: light_state
+
+
+  #- platform: CST816S_touchscreen
+  #  id: my_touch_screen
+  #  on_value:
+  #    - number.increment: light_state
+
+
+
+font:
+  - file: 'fonts/GoogleSans-Medium.ttf'
+    id: font_16
+    size: 16
+  - file: 'fonts/GoogleSans-Medium.ttf'
+    id: font_32
+    size: 32
+  - file: 'fonts/GoogleSans-Medium.ttf'
+    id: font_64
+    size: 64
+
+color:
+  - id: my_red
+    red: 100%
+    green: 3%
+    blue: 5%
+  - id: my_green
+    red: 3%
+    green: 100%
+    blue: 5%
+  - id: my_blue
+    red: 3%
+    green: 5%
+    blue: 100%
+
+display:
+  - platform: gc9a01
+    id: watchface
+    eight_bit_color: false
+    #reset_pin: GPIO1
+    cs_pin: GPIO10
+    dc_pin: GPIO2
+    update_interval: 10ms
+    rotation: 270
+
+# Print the date on one line in blue
+# it.strftime(120,80, id(font_16), id(my_blue), TextAlign::CENTER, "%d/%m/%Y", id(esptime).now());
+# Print the current time on the next line, but in a bigger font but default white
+# Print the outside temperature in green
+# Surround the lot by a red circle with centre at 120, 120 and a radius of 115 because why not
+#it.circle(120, 120, 115, id(my_red));
+    lambda: |-
+      auto red = Color(255, 0, 0);
+
+      // 240 is the max pixel, to rotate the drawing in the right orientation
+      // to swap exemple x remove the 240 - ...
+
+      int x_pos = 240 - id(x_state).state;
+      int y_pos = 240 - id(y_state).state;
+
+      it.strftime(120,60, id(font_16), id(my_blue), TextAlign::CENTER, "%d/%m/%Y", id(esptime).now());
+      it.strftime(120,120, id(font_64), TextAlign::CENTER, "%H:%M", id(esptime).now());
+      it.printf(120, 220, id(font_16), id(my_green), TextAlign::CENTER, "%.1f°c", id(outdoor_temperature).state);
+
+      it.filled_circle(x_pos, y_pos, 5); // for debug display where we click
