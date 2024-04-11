@@ -6,14 +6,17 @@
 #define TP_RST 1
 #define TP_INT 0
 
-NONE = 0x00;
-SWIPE_UP = 0x01;
-SWIPE_DOWN = 0x02;
-SWIPE_LEFT = 0x03;
-SWIPE_RIGHT = 0x04;
-SINGLE_CLICK = 0x05;
-DOUBLE_CLICK = 0x0B;
-LONG_PRESS = 0x0C;
+enum GESTURE {
+  NONE = 0x00,
+  SWIPE_UP = 0x01,
+  SWIPE_DOWN = 0x02,
+  SWIPE_LEFT = 0x03,
+  SWIPE_RIGHT = 0x04,
+  SINGLE_CLICK = 0x05,
+  DOUBLE_CLICK = 0x0B,
+  LONG_PRESS = 0x0C
+
+};
 
 namespace esphome {
 namespace cst816s_touchscreen {
